@@ -23,17 +23,9 @@ st.markdown("""
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
     
-    /* Main container */
-    .main-container {
-        background: white;
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    }
-    
     /* Remove top padding */
     .block-container {
-        padding-top: 2rem;
+        padding-top: 1rem;
         padding-bottom: 2rem;
     }
     
@@ -148,18 +140,20 @@ st.markdown("""
         -ms-user-select: none !important;
     }
     
-    /* Keep checkboxes in a row on mobile */
+    /* Keep checkboxes compact on mobile */
     [data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-wrap: nowrap !important;
-        gap: 0.5rem !important;
+        gap: 0.25rem !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
     }
     
-    /* Prevent column stacking on mobile */
+    /* Prevent column overflow on mobile */
     [data-testid="column"] {
-        min-width: auto !important;
-        flex: 1 !important;
-        max-width: 100px !important;
+        min-width: 0 !important;
+        flex: 1 1 0 !important;
+        max-width: 33.33% !important;
     }
     
     /* Force inline display for checkbox containers */
@@ -167,16 +161,32 @@ st.markdown("""
         display: inline-flex !important;
         align-items: center !important;
         white-space: nowrap !important;
+        font-size: 0.9rem !important;
+    }
+    
+    /* Make checkbox labels smaller on mobile */
+    @media (max-width: 768px) {
+        .stCheckbox label {
+            font-size: 0.85rem !important;
+        }
+        [data-testid="stHorizontalBlock"] {
+            gap: 0.1rem !important;
+        }
+    }
+    
+    /* Section styling */
+    .stMarkdown h2, .stMarkdown h3 {
+        background: white;
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 10px;
     }
     
     /* Mobile responsiveness */
     @media (max-width: 768px) {
         .block-container {
-            padding: 1rem;
-        }
-        .main-container {
-            border-radius: 8px;
-            padding: 15px;
+            padding: 0.5rem;
+            padding-top: 0.5rem;
         }
         h1 {
             font-size: 1.5rem;
@@ -188,8 +198,12 @@ st.markdown("""
             font-size: 1.1rem;
         }
         .stTabs [data-baseweb="tab"] {
-            font-size: 0.9rem;
-            padding: 6px 12px;
+            font-size: 0.85rem;
+            padding: 6px 10px;
+        }
+        /* Compact checkboxes on mobile */
+        .stCheckbox label {
+            padding: 0 !important;
         }
     }
 </style>
@@ -208,18 +222,22 @@ def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
         for person in people
     ])
     
-    # Display task title
+    # Display task title with white background for readability
     if any_checked:
-        st.markdown(f"~~**{task_text}**~~")
+        st.markdown(f'<div style="background: white; padding: 8px; border-radius: 4px; margin-bottom: 4px;">~~**{task_text}**~~</div>', unsafe_allow_html=True)
     else:
-        st.markdown(f"**{task_text}**")
+        st.markdown(f'<div style="background: white; padding: 8px; border-radius: 4px; margin-bottom: 4px;">**{task_text}**</div>', unsafe_allow_html=True)
     
-    # Create a row of checkboxes with labels - use more columns to prevent stacking
-    cols = st.columns([1, 1, 1, 3])  # 3 checkbox columns + empty space
-    for i, person in enumerate(people):
-        with cols[i]:
-            key = f"{task_id}_{person}"
-            st.checkbox(f"{person}", key=key)
+    # Create a compact container for checkboxes
+    container = st.container()
+    with container:
+        # Use HTML to create a more compact checkbox layout
+        checkbox_html = '<div style="display: flex; gap: 15px; padding-left: 10px; margin-bottom: 10px;">'
+        cols = st.columns([1, 1, 1])
+        for i, person in enumerate(people):
+            with cols[i]:
+                key = f"{task_id}_{person}"
+                st.checkbox(f"{person}", key=key)
     
     st.markdown("")  # Add some spacing
 
@@ -238,9 +256,6 @@ def create_phoebe_checklist(tasks, list_id):
     for idx, task in enumerate(tasks):
         key = f"{list_id}_{idx}"
         st.checkbox(task, key=key)
-
-# Title
-st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
 # Data
 morning_tasks = [
@@ -359,8 +374,6 @@ with tab3:
     for month, tasks in monthly_tasks.items():
         st.markdown(f"### {month}")
         create_task_list(tasks, f"month_{month.lower()}")
-
-st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer
 st.markdown("---")
