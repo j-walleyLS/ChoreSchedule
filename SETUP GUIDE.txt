@@ -1,0 +1,65 @@
+# Quick Setup Guide
+
+## Step 1: Test Locally (Optional but Recommended)
+
+1. Save all the files to a folder on your computer
+2. Open terminal/command prompt in that folder
+3. Run:
+   ```
+   pip install streamlit pandas
+   streamlit run app.py
+   ```
+
+## Step 2: Push to GitHub
+
+1. Go to [github.com](https://github.com) and create a new repository
+   - Name it something like "cleaning-schedule"
+   - Make it Public
+   - Don't initialize with README (we have one)
+
+2. In your terminal, in the folder with your files, run:
+   ```
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git branch -M main
+   git remote add origin https://github.com/YOUR-USERNAME/cleaning-schedule.git
+   git push -u origin main
+   ```
+   (Replace YOUR-USERNAME with your actual GitHub username)
+
+## Step 3: Deploy to Streamlit Cloud (FREE!)
+
+1. Go to [share.streamlit.io](https://share.streamlit.io)
+2. Click "Sign in with GitHub" and authorize
+3. Click "New app"
+4. Fill in:
+   - Repository: Select your cleaning-schedule repo
+   - Branch: main
+   - Main file path: app.py
+5. Click "Deploy!"
+
+Your app will be live at: `https://YOUR-APP-NAME.streamlit.app`
+
+## Troubleshooting
+
+- **"Git not found"**: Install Git from [git-scm.com](https://git-scm.com)
+- **"Permission denied"**: Make sure you're logged into GitHub in your terminal
+- **App won't deploy**: Check that requirements.txt is in the root directory
+
+## Customizing Your Schedule
+
+Edit `app.py` and look for these sections:
+- `morning_tasks` - Change your morning routine
+- `evening_tasks` - Change your evening routine  
+- `weekly_tasks` - Modify weekly tasks and days
+- `monthly_tasks` - Customize monthly cleaning by month
+
+After making changes:
+```
+git add .
+git commit -m "Updated tasks"
+git push
+```
+
+Streamlit Cloud will automatically redeploy!
