@@ -65,22 +65,35 @@ st.markdown("""
         border-color: rgba(255, 255, 255, 0.3) !important;
     }
     
-    /* Tabs styling */
+    /* Tabs styling - smaller for single row */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
+        gap: 4px;
         background-color: transparent;
-        flex-wrap: wrap;
+        flex-wrap: nowrap !important;
     }
     .stTabs [data-baseweb="tab"] {
         background-color: rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
+        border-radius: 10px;
         color: white;
         font-weight: 600;
-        padding: 8px 16px;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        white-space: nowrap;
     }
     .stTabs [aria-selected="true"] {
         background-color: white;
         color: #667eea;
+    }
+    
+    /* Even smaller tabs on mobile */
+    @media (max-width: 768px) {
+        .stTabs [data-baseweb="tab"] {
+            font-size: 0.8rem !important;
+            padding: 5px 8px !important;
+        }
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 2px !important;
+        }
     }
     
     /* Style normal checkboxes for Phoebe's section */
@@ -163,10 +176,6 @@ st.markdown("""
         }
         h3 {
             font-size: 1.1rem;
-        }
-        .stTabs [data-baseweb="tab"] {
-            font-size: 0.85rem;
-            padding: 6px 10px;
         }
         
         /* Keep checkboxes horizontal on mobile */
@@ -300,7 +309,7 @@ phoebe_tasks = {
         'Own Laundry',
         'Tidy & Clean Bedroom'
     ],
-    'week2_sat_sun': [
+    'week2_wed_thu_fri': [
         'Vacuuming (Hall, Stairs, Landing & Bathroom)',
         'Dishwasher',
         'Remove Own Items from Hall & Island',
@@ -357,8 +366,8 @@ with tab2:
     
     st.markdown("---")
     
-    st.markdown("### Week 2 - Saturday & Sunday")
-    create_phoebe_checklist(phoebe_tasks['week2_sat_sun'], "phoebe_w2ss")
+    st.markdown("### Week 2 - Wednesday, Thursday & Friday")
+    create_phoebe_checklist(phoebe_tasks['week2_wed_thu_fri'], "phoebe_w2wtf")
 
 with tab3:
     st.markdown("### 🔁 Recurring Monthly Tasks")
