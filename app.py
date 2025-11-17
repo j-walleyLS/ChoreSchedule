@@ -98,9 +98,9 @@ st.markdown("""
         stroke-width: 3px !important;
     }
     
-    /* Label text should be dark */
+    /* Label text should be white on gradient background */
     .stCheckbox label {
-        color: #333 !important;
+        color: white !important;
         background-color: transparent !important;
         border: none !important;
         font-weight: 500;
@@ -174,12 +174,21 @@ st.markdown("""
         }
     }
     
-    /* Section styling */
+    /* Section styling - text in white color instead of white background */
     .stMarkdown h2, .stMarkdown h3 {
-        background: white;
-        padding: 10px;
-        border-radius: 6px;
+        color: white !important;
+        padding: 10px 0;
         margin-bottom: 10px;
+    }
+    
+    /* Make all text white for visibility on gradient */
+    .stMarkdown p {
+        color: white !important;
+    }
+    
+    /* Divider/separator styling */
+    hr {
+        border-color: rgba(255, 255, 255, 0.3) !important;
     }
     
     /* Mobile responsiveness */
@@ -222,22 +231,18 @@ def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
         for person in people
     ])
     
-    # Display task title with white background for readability
+    # Display task title with white text
     if any_checked:
-        st.markdown(f'<div style="background: white; padding: 8px; border-radius: 4px; margin-bottom: 4px;">~~**{task_text}**~~</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="color: white; padding: 8px 0; margin-bottom: 4px;">~~**{task_text}**~~</div>', unsafe_allow_html=True)
     else:
-        st.markdown(f'<div style="background: white; padding: 8px; border-radius: 4px; margin-bottom: 4px;">**{task_text}**</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="color: white; padding: 8px 0; margin-bottom: 4px;">**{task_text}**</div>', unsafe_allow_html=True)
     
-    # Create a compact container for checkboxes
-    container = st.container()
-    with container:
-        # Use HTML to create a more compact checkbox layout
-        checkbox_html = '<div style="display: flex; gap: 15px; padding-left: 10px; margin-bottom: 10px;">'
-        cols = st.columns([1, 1, 1])
-        for i, person in enumerate(people):
-            with cols[i]:
-                key = f"{task_id}_{person}"
-                st.checkbox(f"{person}", key=key)
+    # Create checkboxes in columns
+    cols = st.columns([1, 1, 1])
+    for i, person in enumerate(people):
+        with cols[i]:
+            key = f"{task_id}_{person}"
+            st.checkbox(f"{person}", key=key)
     
     st.markdown("")  # Add some spacing
 
@@ -377,4 +382,4 @@ with tab3:
 
 # Footer
 st.markdown("---")
-st.markdown("*Last updated: " + datetime.now().strftime("%Y-%m-%d") + "*")
+st.markdown('<p style="color: white; opacity: 0.8;">*Last updated: ' + datetime.now().strftime("%Y-%m-%d") + '*</p>', unsafe_allow_html=True)
