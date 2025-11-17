@@ -24,16 +24,10 @@ st.markdown("""
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
     
-    /* Remove ALL shadows */
-    * {
-        box-shadow: none !important;
-    }
-    
     /* Remove top padding */
     .block-container {
         padding-top: 1rem;
         padding-bottom: 2rem;
-        max-width: 100% !important;
     }
     
     /* Headings */
@@ -71,21 +65,11 @@ st.markdown("""
         border-color: rgba(255, 255, 255, 0.3) !important;
     }
     
-    /* Tabs styling - full width and no shadows */
-    .stTabs {
-        width: 100% !important;
-    }
+    /* Tabs styling - smaller for single row */
     .stTabs [data-baseweb="tab-list"] {
         gap: 4px;
         background-color: transparent;
         flex-wrap: nowrap !important;
-        width: 100% !important;
-        justify-content: stretch !important;
-        box-shadow: none !important;
-    }
-    .stTabs [data-baseweb="tab-list"] button {
-        flex: 1 1 0 !important;
-        min-width: 0 !important;
     }
     .stTabs [data-baseweb="tab"] {
         background-color: rgba(255, 255, 255, 0.2);
@@ -95,43 +79,20 @@ st.markdown("""
         padding: 6px 12px;
         font-size: 0.9rem;
         white-space: nowrap;
-        box-shadow: none !important;
-        border: none !important;
-        flex: 1 !important;
     }
     .stTabs [aria-selected="true"] {
         background-color: white;
         color: #667eea;
-        box-shadow: none !important;
     }
     
-    /* Remove any tab panel shadows */
-    .stTabs [data-baseweb="tab-panel"] {
-        box-shadow: none !important;
-        border: none !important;
-        padding: 0 !important;
-    }
-    
-    /* Even smaller tabs on mobile but full width */
+    /* Even smaller tabs on mobile */
     @media (max-width: 768px) {
         .stTabs [data-baseweb="tab"] {
             font-size: 0.8rem !important;
-            padding: 8px 4px !important;
-            flex: 1 !important;
+            padding: 5px 8px !important;
         }
         .stTabs [data-baseweb="tab-list"] {
             gap: 2px !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            width: 100% !important;
-        }
-        .stTabs {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100vw !important;
-            margin-left: -0.5rem !important;
-            margin-right: -0.5rem !important;
-            padding: 0 0.5rem !important;
         }
     }
     
@@ -169,7 +130,7 @@ st.markdown("""
         display: inline-block !important;
     }
     
-    /* Force horizontal layout with padding */
+    /* Force horizontal layout */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
@@ -177,8 +138,6 @@ st.markdown("""
         gap: 8px !important;
         align-items: center !important;
         max-width: 200px !important;
-        margin-left: 15px !important;
-        margin-right: 15px !important;
     }
     
     /* Make Streamlit checkboxes compact */
@@ -265,15 +224,15 @@ def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
     
     # Create a container to limit width and keep checkboxes in a row
     with st.container():
-        # Add custom CSS for this specific container with padding
+        # Add custom CSS for this specific container
         st.markdown("""
         <style>
-            .checkbox-row-wrapper {
-                padding-left: 15px !important;
-                padding-right: 15px !important;
+            .checkbox-row-container {
+                max-width: 200px !important;
+                display: flex !important;
+                flex-direction: row !important;
             }
         </style>
-        <div class="checkbox-row-wrapper">
         """, unsafe_allow_html=True)
         
         # Create checkboxes in equal columns - 3 small ones
@@ -285,8 +244,6 @@ def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
             st.checkbox("J", key=f"{task_id}_J")
         with cols[2]:
             st.checkbox("P", key=f"{task_id}_P")
-        
-        st.markdown("</div>", unsafe_allow_html=True)
     
     st.markdown("")  # Add spacing between tasks
 
