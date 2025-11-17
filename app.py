@@ -1,5 +1,6 @@
 import streamlit as st
 from datetime import datetime
+import streamlit.components.v1 as components
 
 # Page configuration
 st.set_page_config(
@@ -9,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for styling
+# Custom CSS for styling with enhanced checkbox targeting
 st.markdown("""
 <style>
     /* Remove white banner/header */
@@ -65,65 +66,78 @@ st.markdown("""
         color: #667eea;
     }
     
-    /* White checkboxes with black border - Enhanced styling */
-    div[data-testid="stCheckbox"] {
-        padding: 5px 0;
-    }
+    /* ===== ENHANCED CHECKBOX STYLING ===== */
     
-    /* Label text color */
-    div[data-testid="stCheckbox"] > label {
-        color: #333 !important;
-        font-weight: 500;
-    }
-    
-    /* Target Streamlit's checkbox container */
+    /* Reset checkbox container */
     .stCheckbox {
+        margin: 0 !important;
+    }
+    
+    /* Label text styling */
+    .stCheckbox label {
         color: #333 !important;
+        cursor: pointer !important;
     }
     
-    /* Override the checkbox background and border */
-    .stCheckbox > label > div:first-child {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+    /* Hide the default checkbox but keep it functional */
+    .stCheckbox input[type="checkbox"] {
+        position: absolute !important;
+        opacity: 0 !important;
+        cursor: pointer !important;
     }
     
-    /* Style the checkbox itself using Streamlit's internal structure */
-    div[data-testid="stCheckbox"] label > div:first-child > div {
+    /* Create custom checkbox appearance */
+    .stCheckbox label::before {
+        content: '' !important;
+        display: inline-block !important;
+        width: 18px !important;
+        height: 18px !important;
+        margin-right: 8px !important;
+        vertical-align: middle !important;
         background-color: white !important;
         border: 2px solid #000 !important;
-        border-radius: 4px !important;
+        border-radius: 3px !important;
+        box-sizing: border-box !important;
     }
     
-    /* Ensure the checkmark is black */
-    div[data-testid="stCheckbox"] label svg {
+    /* Checked state */
+    .stCheckbox input[type="checkbox"]:checked + label::before {
+        background-color: white !important;
+        border-color: #000 !important;
+    }
+    
+    /* Add checkmark for checked state */
+    .stCheckbox input[type="checkbox"]:checked + label::after {
+        content: '✓' !important;
+        position: absolute !important;
+        left: 4px !important;
+        top: 0px !important;
+        color: #000 !important;
+        font-weight: bold !important;
+        font-size: 14px !important;
+    }
+    
+    /* Alternative approach using attribute selectors */
+    div[data-testid="stCheckbox"] div[data-baseweb="checkbox"] {
+        background-color: white !important;
+        border: 2px solid #000 !important;
+    }
+    
+    div[data-testid="stCheckbox"] div[data-checked="true"] {
+        background-color: white !important;
+        border-color: #000 !important;
+    }
+    
+    /* Target SVG checkmark */
+    div[data-testid="stCheckbox"] svg {
         color: #000 !important;
         stroke: #000 !important;
-        fill: #000 !important;
     }
     
-    /* Additional targeting for Streamlit checkbox components */
-    .st-emotion-cache-1y4p8pa,
-    .st-emotion-cache-16idsys p {
-        color: #333 !important;
-    }
-    
-    /* Target checkbox by role attribute */
-    [role="checkbox"] {
+    /* Force override all checkbox-related elements */
+    [data-baseweb="checkbox"] > div {
         background-color: white !important;
         border: 2px solid #000 !important;
-        outline: none !important;
-    }
-    
-    [role="checkbox"]:checked {
-        background-color: white !important;
-        border-color: #000 !important;
-    }
-    
-    /* Force override with important flags */
-    .st-cb, .st-cc, .st-cd, .st-ce, .st-cf, .st-cg {
-        background-color: white !important;
-        border-color: #000 !important;
     }
     
     /* Mobile responsiveness */
@@ -151,6 +165,39 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+
+# JavaScript to force checkbox styling
+components.html("""
+<script>
+    const checkInterval = setInterval(() => {
+        const checkboxes = document.querySelectorAll('[data-baseweb="checkbox"]');
+        if (checkboxes.length > 0) {
+            checkboxes.forEach(checkbox => {
+                checkbox.style.backgroundColor = 'white';
+                checkbox.style.border = '2px solid black';
+                checkbox.style.borderRadius = '4px';
+                
+                // Find the SVG inside for the checkmark
+                const svg = checkbox.querySelector('svg');
+                if (svg) {
+                    svg.style.stroke = 'black';
+                    svg.style.fill = 'black';
+                }
+            });
+            
+            // Also target by role
+            const roleCheckboxes = document.querySelectorAll('[role="checkbox"]');
+            roleCheckboxes.forEach(checkbox => {
+                checkbox.style.backgroundColor = 'white';
+                checkbox.style.borderColor = 'black';
+            });
+        }
+    }, 100);
+    
+    // Clear interval after 5 seconds to prevent performance issues
+    setTimeout(() => clearInterval(checkInterval), 5000);
+</script>
+""", height=0)
 
 # Initialize session state for checkboxes if not already done
 if 'checkboxes' not in st.session_state:
