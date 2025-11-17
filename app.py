@@ -161,37 +161,65 @@ st.markdown("""
         display: inline-flex !important;
         align-items: center !important;
         white-space: nowrap !important;
-        font-size: 0.9rem !important;
+        font-size: 0.85rem !important;
         min-width: 0 !important;
-        margin-right: 0 !important;
-        padding-right: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: auto !important;
     }
     
-    /* Reduce checkbox element spacing */
+    /* Minimize the checkbox label spacing */
     .stCheckbox > label {
         padding: 0 !important;
         margin: 0 !important;
-        gap: 4px !important;
+        gap: 2px !important;
+        display: inline-flex !important;
+        align-items: center !important;
     }
     
-    /* Make checkbox square smaller on mobile */
+    /* Make the actual checkbox square smaller */
+    [data-baseweb="checkbox"] {
+        width: 16px !important;
+        height: 16px !important;
+        min-width: 16px !important;
+        margin: 0 !important;
+        flex-shrink: 0 !important;
+    }
+    
+    /* Remove all column padding and gaps */
+    div[data-testid="column"] {
+        padding: 0 !important;
+        margin: 0 !important;
+        gap: 0 !important;
+    }
+    
+    div[data-testid="stHorizontalBlock"] {
+        gap: 2px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Mobile specific ultra-compact */
     @media (max-width: 768px) {
         [data-baseweb="checkbox"] {
-            width: 18px !important;
-            height: 18px !important;
-            min-width: 18px !important;
+            width: 16px !important;
+            height: 16px !important;
+            min-width: 16px !important;
         }
         .stCheckbox label {
-            font-size: 0.85rem !important;
-            padding: 0 !important;
-            margin: 0 !important;
+            font-size: 0.8rem !important;
+            letter-spacing: -0.5px !important;
         }
-        [data-testid="stHorizontalBlock"] {
-            padding: 0 !important;
-            margin: 0 !important;
+        div[data-testid="column"] {
+            max-width: 40px !important;
         }
-        [data-testid="column"] {
-            padding: 0 1px !important;
+        /* First 3 columns should be tiny */
+        div[data-testid="stHorizontalBlock"] > div:nth-child(1),
+        div[data-testid="stHorizontalBlock"] > div:nth-child(2),
+        div[data-testid="stHorizontalBlock"] > div:nth-child(3) {
+            flex: 0 0 auto !important;
+            width: 35px !important;
+            max-width: 35px !important;
         }
     }
     
@@ -258,8 +286,8 @@ def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
     else:
         st.markdown(f'<div style="color: white; padding: 8px 0; margin-bottom: 4px;">**{task_text}**</div>', unsafe_allow_html=True)
     
-    # Create very compact checkboxes using minimal column space
-    col1, col2, col3, col4 = st.columns([0.5, 0.5, 0.5, 2.5])
+    # Create extremely compact checkboxes - all three in a tiny space
+    col1, col2, col3, spacer = st.columns([0.15, 0.15, 0.15, 3.55])
     
     with col1:
         st.checkbox("L", key=f"{task_id}_L")
@@ -267,7 +295,7 @@ def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
         st.checkbox("J", key=f"{task_id}_J")
     with col3:
         st.checkbox("P", key=f"{task_id}_P")
-    # col4 is empty space
+    # spacer takes up the rest
     
     st.markdown("")  # Add some spacing
 
