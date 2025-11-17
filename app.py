@@ -176,6 +176,7 @@ st.markdown("""
         flex-wrap: nowrap !important;
         gap: 8px !important;
         align-items: center !important;
+        max-width: 200px !important;
     }
     
     /* Make Streamlit checkboxes compact */
@@ -260,15 +261,14 @@ def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
     else:
         st.markdown(f'<div class="task-text">{task_text}</div>', unsafe_allow_html=True)
     
-    # Create checkboxes with spacing to center them
-    # Using 5 columns: spacer, L, J, P, spacer
-    col_spacer1, col_l, col_j, col_p, col_spacer2 = st.columns([1.5, 1, 1, 1, 1.5])
+    # Create checkboxes in equal columns - 3 small ones
+    cols = st.columns([1, 1, 1])
     
-    with col_l:
+    with cols[0]:
         st.checkbox("L", key=f"{task_id}_L")
-    with col_j:
+    with cols[1]:
         st.checkbox("J", key=f"{task_id}_J")
-    with col_p:
+    with cols[2]:
         st.checkbox("P", key=f"{task_id}_P")
     
     st.markdown("")  # Add spacing between tasks
