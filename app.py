@@ -60,56 +60,6 @@ st.markdown("""
         color: white !important;
     }
     
-    /* Custom checkbox styling */
-    .custom-checkbox-group {
-        display: flex !important;
-        gap: 10px !important;
-        margin-bottom: 15px !important;
-        padding-left: 10px;
-    }
-    
-    .custom-checkbox {
-        display: flex !important;
-        align-items: center !important;
-        gap: 4px !important;
-        cursor: pointer;
-        user-select: none;
-    }
-    
-    .custom-checkbox input[type="checkbox"] {
-        width: 18px !important;
-        height: 18px !important;
-        background-color: white !important;
-        border: 2px solid #000 !important;
-        border-radius: 3px !important;
-        margin: 0 !important;
-        cursor: pointer;
-        -webkit-appearance: none;
-        appearance: none;
-    }
-    
-    .custom-checkbox input[type="checkbox"]:checked {
-        background-color: white !important;
-        position: relative;
-    }
-    
-    .custom-checkbox input[type="checkbox"]:checked::after {
-        content: "✓";
-        position: absolute;
-        left: 2px;
-        top: -2px;
-        color: black;
-        font-weight: bold;
-        font-size: 14px;
-    }
-    
-    .custom-checkbox label {
-        color: white !important;
-        font-size: 0.9rem !important;
-        margin: 0 !important;
-        cursor: pointer;
-    }
-    
     /* Divider/separator styling */
     hr {
         border-color: rgba(255, 255, 255, 0.3) !important;
@@ -159,6 +109,32 @@ st.markdown("""
         border: none !important;
     }
     
+    /* Force compact Streamlit checkboxes */
+    div[data-testid="column"] {
+        max-width: 40px !important;
+        flex: 0 0 40px !important;
+    }
+    
+    /* Remove padding from columns */
+    .element-container {
+        width: 100% !important;
+    }
+    
+    div[data-testid="stHorizontalBlock"] {
+        gap: 5px !important;
+    }
+    
+    /* Make Streamlit checkboxes compact */
+    .stCheckbox {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .stCheckbox label {
+        padding: 0 2px !important;
+        font-size: 0.85rem !important;
+    }
+    
     /* Mobile responsiveness */
     @media (max-width: 768px) {
         .block-container {
@@ -175,15 +151,27 @@ st.markdown("""
             font-size: 0.85rem;
             padding: 6px 10px;
         }
-        .custom-checkbox-group {
-            gap: 8px !important;
+        
+        /* Ultra compact on mobile */
+        div[data-testid="column"]:nth-child(1),
+        div[data-testid="column"]:nth-child(2),
+        div[data-testid="column"]:nth-child(3) {
+            max-width: 35px !important;
+            flex: 0 0 35px !important;
+            padding: 0 !important;
         }
-        .custom-checkbox input[type="checkbox"] {
-            width: 16px !important;
-            height: 16px !important;
+        
+        div[data-testid="stHorizontalBlock"] {
+            gap: 2px !important;
+            overflow: visible !important;
         }
-        .custom-checkbox label {
-            font-size: 0.85rem !important;
+        
+        .stCheckbox {
+            width: 35px !important;
+        }
+        
+        .stCheckbox label {
+            font-size: 0.8rem !important;
         }
     }
 </style>
@@ -193,52 +181,8 @@ st.markdown("""
 if 'checkboxes' not in st.session_state:
     st.session_state.checkboxes = {}
 
-# JavaScript for handling custom checkboxes
-def create_checkbox_js():
-    return """
-    <script>
-    function toggleCheckbox(taskId, person) {
-        const checkbox = document.getElementById(taskId + '_' + person);
-        const isChecked = checkbox.checked;
-        
-        // Send state back to Streamlit
-        window.parent.postMessage({
-            type: 'streamlit:setComponentValue',
-            data: {
-                key: taskId + '_' + person,
-                value: isChecked
-            }
-        }, '*');
-    }
-    </script>
-    """
-
-def create_task_with_custom_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
-    """Create a task with custom HTML checkboxes"""
-    
-    # Display task title
-    task_html = f'<div class="task-text">{task_text}</div>'
-    
-    # Create custom checkbox HTML
-    checkbox_html = '<div class="custom-checkbox-group">'
-    for person in people:
-        checkbox_id = f"{task_id}_{person}"
-        checked = st.session_state.checkboxes.get(checkbox_id, False)
-        checked_attr = "checked" if checked else ""
-        checkbox_html += f'''
-        <div class="custom-checkbox">
-            <input type="checkbox" id="{checkbox_id}" {checked_attr} 
-                   onchange="toggleCheckbox('{task_id}', '{person}')">
-            <label for="{checkbox_id}">{person}</label>
-        </div>
-        '''
-    checkbox_html += '</div>'
-    
-    # Display the HTML
-    st.markdown(task_html + checkbox_html, unsafe_allow_html=True)
-
-def create_task_with_streamlit_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
-    """Fallback to regular Streamlit checkboxes but ultra-compact"""
+def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
+    """Create a task with compact checkboxes"""
     
     # Check if any checkbox is checked for this task
     any_checked = any([
@@ -246,28 +190,18 @@ def create_task_with_streamlit_checkboxes(task_text, task_id, people=['L', 'J', 
         for person in people
     ])
     
-    # Display task title with white text
+    # Display task title
     if any_checked:
-        st.markdown(f'<div style="color: white; font-weight: bold; padding: 8px 0;">~~{task_text}~~</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="task-text">~~{task_text}~~</div>', unsafe_allow_html=True)
     else:
-        st.markdown(f'<div style="color: white; font-weight: bold; padding: 8px 0;">{task_text}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="task-text">{task_text}</div>', unsafe_allow_html=True)
     
-    # Create a single row with HTML for the checkboxes
-    checkbox_container = st.container()
-    with checkbox_container:
-        # Use markdown with custom HTML instead of columns
-        st.markdown("""
-        <div style="display: flex; gap: 15px; padding-left: 10px; margin-bottom: 10px;">
-        """, unsafe_allow_html=True)
-        
-        # Create three small columns
-        c1, c2, c3, empty = st.columns([0.8, 0.8, 0.8, 10])
-        with c1:
-            st.checkbox("L", key=f"{task_id}_L")
-        with c2:
-            st.checkbox("J", key=f"{task_id}_J")
-        with c3:
-            st.checkbox("P", key=f"{task_id}_P")
+    # Use Streamlit columns but make them VERY small
+    cols = st.columns([0.5, 0.5, 0.5, 10])  # Very small ratios
+    
+    for i, person in enumerate(people):
+        with cols[i]:
+            st.checkbox(person, key=f"{task_id}_{person}")
 
 def create_task_list(tasks, list_id, people=['L', 'J', 'P'], show_day=False):
     """Create a list of tasks with checkboxes"""
@@ -277,17 +211,13 @@ def create_task_list(tasks, list_id, people=['L', 'J', 'P'], show_day=False):
         else:
             task_text = task
         
-        # Use custom HTML checkboxes for better mobile control
-        create_task_with_custom_checkboxes(task_text, f"{list_id}_{idx}", people)
+        create_task_with_checkboxes(task_text, f"{list_id}_{idx}", people)
 
 def create_phoebe_checklist(tasks, list_id):
     """Create a simple checklist for Phoebe's tasks"""
     for idx, task in enumerate(tasks):
         key = f"{list_id}_{idx}"
         st.checkbox(task, key=key)
-
-# Add JavaScript
-st.markdown(create_checkbox_js(), unsafe_allow_html=True)
 
 # Data
 morning_tasks = [
