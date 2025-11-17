@@ -22,22 +22,6 @@ st.markdown("""
     /* Main app background */
     .stApp {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        overflow-x: hidden !important;
-    }
-    
-    /* Prevent horizontal scrolling */
-    .main {
-        overflow-x: hidden !important;
-    }
-    
-    section[data-testid="stSidebar"] {
-        display: none !important;
-    }
-    
-    /* Tab content containers */
-    .stTabs [data-baseweb="tab-panel"] {
-        overflow-x: hidden !important;
-        max-width: 100% !important;
     }
     
     /* Remove ALL shadows */
@@ -192,8 +176,7 @@ st.markdown("""
         flex-wrap: nowrap !important;
         gap: 8px !important;
         align-items: center !important;
-        max-width: 100% !important;
-        overflow-x: hidden !important;
+        max-width: 200px !important;
     }
     
     /* Make Streamlit checkboxes compact */
@@ -278,20 +261,15 @@ def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
     else:
         st.markdown(f'<div class="task-text">{task_text}</div>', unsafe_allow_html=True)
     
-    # Create a container to prevent overflow
-    container = st.container()
-    with container:
-        # Use columns but limit their total width
-        st.markdown('<div style="max-width: 200px; overflow-x: hidden;">', unsafe_allow_html=True)
-        cols = st.columns([1, 1, 1])
-        
-        with cols[0]:
-            st.checkbox("L", key=f"{task_id}_L")
-        with cols[1]:
-            st.checkbox("J", key=f"{task_id}_J")
-        with cols[2]:
-            st.checkbox("P", key=f"{task_id}_P")
-        st.markdown('</div>', unsafe_allow_html=True)
+    # Create checkboxes in equal columns - 3 small ones
+    cols = st.columns([1, 1, 1])
+    
+    with cols[0]:
+        st.checkbox("L", key=f"{task_id}_L")
+    with cols[1]:
+        st.checkbox("J", key=f"{task_id}_J")
+    with cols[2]:
+        st.checkbox("P", key=f"{task_id}_P")
     
     st.markdown("")  # Add spacing between tasks
 
