@@ -169,7 +169,7 @@ st.markdown("""
         display: inline-block !important;
     }
     
-    /* Force horizontal layout */
+    /* Force horizontal layout with padding */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
@@ -177,6 +177,8 @@ st.markdown("""
         gap: 8px !important;
         align-items: center !important;
         max-width: 200px !important;
+        margin-left: 15px !important;
+        margin-right: 15px !important;
     }
     
     /* Make Streamlit checkboxes compact */
@@ -263,15 +265,15 @@ def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
     
     # Create a container to limit width and keep checkboxes in a row
     with st.container():
-        # Add custom CSS for this specific container
+        # Add custom CSS for this specific container with padding
         st.markdown("""
         <style>
-            .checkbox-row-container {
-                max-width: 200px !important;
-                display: flex !important;
-                flex-direction: row !important;
+            .checkbox-row-wrapper {
+                padding-left: 15px !important;
+                padding-right: 15px !important;
             }
         </style>
+        <div class="checkbox-row-wrapper">
         """, unsafe_allow_html=True)
         
         # Create checkboxes in equal columns - 3 small ones
@@ -283,6 +285,8 @@ def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
             st.checkbox("J", key=f"{task_id}_J")
         with cols[2]:
             st.checkbox("P", key=f"{task_id}_P")
+        
+        st.markdown("</div>", unsafe_allow_html=True)
     
     st.markdown("")  # Add spacing between tasks
 
