@@ -5,21 +5,39 @@ from datetime import datetime
 st.set_page_config(
     page_title="Household Cleaning Schedule",
     page_icon="🧹",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
 # Custom CSS for styling
 st.markdown("""
 <style>
+    /* Remove white banner/header */
+    header[data-testid="stHeader"] {
+        background-color: transparent;
+        display: none;
+    }
+    
+    /* Main app background */
     .stApp {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
+    
+    /* Main container */
     .main-container {
         background: white;
         border-radius: 16px;
         padding: 20px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
+    
+    /* Remove top padding */
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+    
+    /* Headings */
     h1 {
         color: #667eea;
         text-align: center;
@@ -28,22 +46,61 @@ st.markdown("""
     h2, h3 {
         color: #667eea;
     }
+    
+    /* Tabs styling */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
         background-color: transparent;
+        flex-wrap: wrap;
     }
     .stTabs [data-baseweb="tab"] {
         background-color: rgba(255, 255, 255, 0.2);
         border-radius: 12px;
         color: white;
         font-weight: 600;
+        padding: 8px 16px;
     }
     .stTabs [aria-selected="true"] {
         background-color: white;
         color: #667eea;
     }
+    
+    /* White checkboxes */
     div[data-testid="stCheckbox"] {
         padding: 5px 0;
+    }
+    div[data-testid="stCheckbox"] > label {
+        color: white;
+    }
+    /* Checkbox input styling for white appearance */
+    input[type="checkbox"] {
+        accent-color: white;
+        width: 18px;
+        height: 18px;
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .block-container {
+            padding: 1rem;
+        }
+        .main-container {
+            border-radius: 8px;
+            padding: 15px;
+        }
+        h1 {
+            font-size: 1.5rem;
+        }
+        h2 {
+            font-size: 1.3rem;
+        }
+        h3 {
+            font-size: 1.1rem;
+        }
+        .stTabs [data-baseweb="tab"] {
+            font-size: 0.9rem;
+            padding: 6px 12px;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -54,9 +111,9 @@ if 'checkboxes' not in st.session_state:
 
 def create_checkbox_table(tasks, table_id, people=['L', 'J', 'P'], show_day=False):
     """Create an interactive table with checkboxes for each person"""
-    cols = st.columns([3] + [1]*len(people))
     
     # Header
+    cols = st.columns([3] + [1]*len(people))
     cols[0].markdown("**Task**")
     for i, person in enumerate(people):
         cols[i+1].markdown(f"**{person}**")
@@ -168,36 +225,37 @@ monthly_tasks = {
 tab1, tab2, tab3 = st.tabs(["📅 Daily Routines", "👧 Phoebe's Schedule", "🔍 Deep Cleaning"])
 
 with tab1:
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("### 🌅 Every Morning")
-        create_checkbox_table(morning_tasks, "morning")
-    
-    with col2:
-        st.markdown("### 🌙 Every Evening")
-        create_checkbox_table(evening_tasks, "evening")
+    # Morning tasks
+    st.markdown("### 🌅 Every Morning")
+    create_checkbox_table(morning_tasks, "morning")
     
     st.markdown("---")
+    
+    # Evening tasks
+    st.markdown("### 🌙 Every Evening")
+    create_checkbox_table(evening_tasks, "evening")
+    
+    st.markdown("---")
+    
+    # Weekly tasks
     st.markdown("### 📆 Weekly Tasks")
     create_checkbox_table(weekly_tasks, "weekly", show_day=True)
 
 with tab2:
     st.markdown("## Phoebe's Weekly Schedule")
     
-    col1, col2, col3 = st.columns(3)
+    st.markdown("### Week 1 - Monday & Tuesday")
+    create_phoebe_checklist(phoebe_tasks['week1_mon_tue'], "phoebe_w1mt")
     
-    with col1:
-        st.markdown("### Week 1 - Monday & Tuesday")
-        create_phoebe_checklist(phoebe_tasks['week1_mon_tue'], "phoebe_w1mt")
+    st.markdown("---")
     
-    with col2:
-        st.markdown("### Week 1 - Saturday & Sunday")
-        create_phoebe_checklist(phoebe_tasks['week1_sat_sun'], "phoebe_w1ss")
+    st.markdown("### Week 1 - Saturday & Sunday")
+    create_phoebe_checklist(phoebe_tasks['week1_sat_sun'], "phoebe_w1ss")
     
-    with col3:
-        st.markdown("### Week 2 - Saturday & Sunday")
-        create_phoebe_checklist(phoebe_tasks['week2_sat_sun'], "phoebe_w2ss")
+    st.markdown("---")
+    
+    st.markdown("### Week 2 - Saturday & Sunday")
+    create_phoebe_checklist(phoebe_tasks['week2_sat_sun'], "phoebe_w2ss")
 
 with tab3:
     st.markdown("### 🔁 Recurring Monthly Tasks")
@@ -206,18 +264,11 @@ with tab3:
     st.markdown("---")
     st.markdown("## 📅 Monthly Deep Cleaning Schedule")
     
-    # Display months in a grid
-    cols_per_row = 3
-    months = list(monthly_tasks.keys())
-    
-    for i in range(0, len(months), cols_per_row):
-        cols = st.columns(cols_per_row)
-        for j, col in enumerate(cols):
-            if i + j < len(months):
-                month = months[i + j]
-                with col:
-                    st.markdown(f"### {month}")
-                    create_checkbox_table(monthly_tasks[month], f"month_{month.lower()}")
+    # Display months - they'll wrap naturally on mobile
+    for month, tasks in monthly_tasks.items():
+        st.markdown(f"### {month}")
+        create_checkbox_table(tasks, f"month_{month.lower()}")
+        st.markdown("")  # Small spacing between months
 
 st.markdown('</div>', unsafe_allow_html=True)
 
