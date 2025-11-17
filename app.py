@@ -199,27 +199,66 @@ st.markdown("""
         margin: 0 !important;
     }
     
-    /* Mobile specific ultra-compact */
+    /* Mobile specific ultra-compact - MORE AGGRESSIVE */
     @media (max-width: 768px) {
+        /* Target streamlit columns specifically */
+        .row-widget.stHorizontalBlock {
+            gap: 0 !important;
+            display: flex !important;
+            max-width: 100vw !important;
+        }
+        
+        /* Make ONLY the first 3 columns tiny */
+        .row-widget.stHorizontalBlock > div:nth-child(1),
+        .row-widget.stHorizontalBlock > div:nth-child(2),
+        .row-widget.stHorizontalBlock > div:nth-child(3) {
+            flex: 0 0 30px !important;
+            max-width: 30px !important;
+            width: 30px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        /* Force all columns in checkbox rows to be compact */
+        div[data-testid="column"]:has(.stCheckbox) {
+            flex: 0 0 30px !important;
+            max-width: 30px !important;
+            padding: 0 !important;
+        }
+        
+        /* Make checkboxes tiny */
         [data-baseweb="checkbox"] {
-            width: 16px !important;
-            height: 16px !important;
-            min-width: 16px !important;
+            width: 14px !important;
+            height: 14px !important;
+            min-width: 14px !important;
         }
+        
+        .stCheckbox {
+            width: 30px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
         .stCheckbox label {
-            font-size: 0.8rem !important;
-            letter-spacing: -0.5px !important;
+            font-size: 0.7rem !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
-        div[data-testid="column"] {
-            max-width: 40px !important;
+        
+        /* Override Streamlit's responsive behavior */
+        [data-testid="stHorizontalBlock"] {
+            flex-wrap: nowrap !important;
+            overflow: visible !important;
         }
-        /* First 3 columns should be tiny */
-        div[data-testid="stHorizontalBlock"] > div:nth-child(1),
-        div[data-testid="stHorizontalBlock"] > div:nth-child(2),
-        div[data-testid="stHorizontalBlock"] > div:nth-child(3) {
-            flex: 0 0 auto !important;
-            width: 35px !important;
-            max-width: 35px !important;
+        
+        /* Target the element container */
+        .element-container {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        
+        .element-container:has(.stCheckbox) {
+            max-width: 30px !important;
         }
     }
     
@@ -286,18 +325,33 @@ def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
     else:
         st.markdown(f'<div style="color: white; padding: 8px 0; margin-bottom: 4px;">**{task_text}**</div>', unsafe_allow_html=True)
     
-    # Create extremely compact checkboxes - all three in a tiny space
-    col1, col2, col3, spacer = st.columns([0.15, 0.15, 0.15, 3.55])
+    # Create a custom HTML container for ultra-compact checkboxes
+    st.markdown("""
+    <style>
+        .compact-checkbox-container {
+            display: flex !important;
+            gap: 8px !important;
+            max-width: 120px !important;
+            margin-bottom: 8px !important;
+        }
+        .compact-checkbox-container > div {
+            flex: 0 0 auto !important;
+            width: 32px !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
     
-    with col1:
-        st.checkbox("L", key=f"{task_id}_L")
-    with col2:
-        st.checkbox("J", key=f"{task_id}_J")
-    with col3:
-        st.checkbox("P", key=f"{task_id}_P")
-    # spacer takes up the rest
-    
-    st.markdown("")  # Add some spacing
+    # Create container and use very small columns
+    container = st.container()
+    with container:
+        # Use 6 columns with only the first 3 used (makes them smaller)
+        cols = st.columns(6)
+        with cols[0]:
+            st.checkbox("L", key=f"{task_id}_L")
+        with cols[1]:
+            st.checkbox("J", key=f"{task_id}_J")
+        with cols[2]:
+            st.checkbox("P", key=f"{task_id}_P")
 
 def create_task_list(tasks, list_id, people=['L', 'J', 'P'], show_day=False):
     """Create a list of tasks with checkboxes"""
