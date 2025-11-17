@@ -24,6 +24,22 @@ st.markdown("""
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
     
+    /* Disable horizontal scrolling completely */
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+    
+    .stApp {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+    
+    section.main > div {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+    
     /* Remove ALL shadows */
     * {
         box-shadow: none !important;
