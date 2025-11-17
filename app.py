@@ -334,7 +334,7 @@ monthly_tasks = {
 }
 
 # Tabs
-tab1, tab2, tab3 = st.tabs(["📅 Daily Routines", "👧 Phoebe's Schedule", "🔍 Deep Cleaning"])
+tab1, tab2, tab3 = st.tabs(["Daily Routines", "Phoebe's Schedule", "Deep Cleaning"])
 
 with tab1:
     # Morning tasks
