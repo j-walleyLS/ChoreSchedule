@@ -47,6 +47,13 @@ st.markdown("""
         color: #667eea;
     }
     
+    /* Task styling */
+    .task-title {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+    }
+    
     /* Tabs styling */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
@@ -65,40 +72,25 @@ st.markdown("""
         color: #667eea;
     }
     
-    /* ===== CLEAN CHECKBOX STYLING ===== */
+    /* ===== CHECKBOX STYLING ===== */
     
-    /* All checkbox text should be dark - but not have borders */
-    .stCheckbox label {
-        color: #333 !important;
-        background-color: transparent !important;
-        border: none !important;
-    }
-    
-    .stCheckbox label span,
-    .stCheckbox label p,
-    div[data-testid="stCheckbox"] label,
-    div[data-testid="stCheckbox"] p {
-        color: #333 !important;
-        background-color: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
-    
-    /* Style ONLY the actual checkbox square element */
+    /* Make checkbox container visible */
     [data-baseweb="checkbox"] {
         background-color: white !important;
         border: 2px solid #000 !important;
         border-radius: 4px !important;
         outline: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
     }
     
-    /* Checkbox when checked - maintain white background */
+    /* Checkbox when checked */
     [data-baseweb="checkbox"][data-checked="true"] {
         background-color: white !important;
         border: 2px solid #000 !important;
     }
     
-    /* Make the checkmark/tick black */
+    /* Make the checkmark black */
     [data-baseweb="checkbox"] svg {
         color: #000 !important;
         stroke: #000 !important;
@@ -106,20 +98,28 @@ st.markdown("""
         stroke-width: 3px !important;
     }
     
-    /* Remove any hover effects that might change colors */
+    /* Label text should be dark */
+    .stCheckbox label {
+        color: #333 !important;
+        background-color: transparent !important;
+        border: none !important;
+        font-weight: 500;
+    }
+    
+    /* Remove hover effects */
     [data-baseweb="checkbox"]:hover {
         background-color: white !important;
         border-color: #000 !important;
     }
     
-    /* Focus state - minimal highlight */
+    /* Remove focus highlight */
     [data-baseweb="checkbox"]:focus {
         background-color: white !important;
         border-color: #000 !important;
         box-shadow: none !important;
     }
     
-    /* Prevent text selection/highlighting */
+    /* Prevent text selection */
     .stCheckbox label {
         user-select: none !important;
         -webkit-user-select: none !important;
@@ -127,50 +127,12 @@ st.markdown("""
         -ms-user-select: none !important;
     }
     
-    /* Ensure columns maintain their width */
-    .stColumn {
-        flex: initial !important;
-    }
-    
-    /* Maintain column structure */
-    [data-testid="column"] {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-start !important;
-    }
-    
-    /* Keep checkboxes inline in table format */
-    [data-testid="column"] .stCheckbox {
-        margin-bottom: 0 !important;
-        padding: 2px 0 !important;
-    }
-    
-    /* Ensure proper spacing between rows */
-    .row-widget {
-        margin-bottom: 0.5rem !important;
-    }
-    
-    /* Fix column widths to prevent stacking */
-    div[data-testid="stHorizontalBlock"] {
-        gap: 1rem !important;
-        flex-wrap: nowrap !important;
-    }
-    
-    /* Force columns to stay side by side */
-    div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
-        min-width: 0 !important;
-        flex-shrink: 1 !important;
-    }
-    
-    /* Task column should be wider */
-    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:first-child {
-        flex: 4 !important;
-    }
-    
-    /* Checkbox columns should be narrower */
-    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:not(:first-child) {
-        flex: 1 !important;
-        max-width: 80px !important;
+    /* Inline checkbox styling */
+    .checkbox-row {
+        display: flex;
+        gap: 1rem;
+        margin-left: 1rem;
+        flex-wrap: wrap;
     }
     
     /* Mobile responsiveness */
@@ -203,37 +165,39 @@ st.markdown("""
 if 'checkboxes' not in st.session_state:
     st.session_state.checkboxes = {}
 
-def create_checkbox_table(tasks, table_id, people=['L', 'J', 'P'], show_day=False):
-    """Create an interactive table with checkboxes for each person"""
+def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
+    """Create a task with checkboxes for each person below it"""
     
-    # Header with better column ratios
-    cols = st.columns([4, 1, 1, 1])  # Wider task column, equal width for people
-    cols[0].markdown("**Task**")
+    # Check if any checkbox is checked for this task
+    any_checked = any([
+        st.session_state.checkboxes.get(f"{task_id}_{person}", False)
+        for person in people
+    ])
+    
+    # Display task title
+    if any_checked:
+        st.markdown(f"~~**{task_text}**~~")
+    else:
+        st.markdown(f"**{task_text}**")
+    
+    # Create a row of checkboxes with labels
+    cols = st.columns(len(people))
     for i, person in enumerate(people):
-        cols[i+1].markdown(f"**{person}**")
+        with cols[i]:
+            key = f"{task_id}_{person}"
+            st.checkbox(f"{person}", key=key)
     
-    # Tasks
+    st.markdown("")  # Add some spacing
+
+def create_task_list(tasks, list_id, people=['L', 'J', 'P'], show_day=False):
+    """Create a list of tasks with checkboxes"""
     for idx, task in enumerate(tasks):
-        task_text = f"{task['day']}: {task['task']}" if show_day and 'day' in task else task if isinstance(task, str) else task.get('task', '')
-        
-        cols = st.columns([4, 1, 1, 1])  # Same ratio for consistency
-        
-        # Check if any checkbox is checked for this task
-        any_checked = any([
-            st.session_state.checkboxes.get(f"{table_id}_{idx}_{person}", False)
-            for person in people
-        ])
-        
-        # Display task with strikethrough if any checkbox is checked
-        if any_checked:
-            cols[0].markdown(f"~~{task_text}~~")
+        if isinstance(task, dict):
+            task_text = f"{task['day']}: {task['task']}" if show_day else task['task']
         else:
-            cols[0].markdown(task_text)
+            task_text = task
         
-        # Checkboxes for each person
-        for i, person in enumerate(people):
-            key = f"{table_id}_{idx}_{person}"
-            cols[i+1].checkbox("", key=key, label_visibility="collapsed")
+        create_task_with_checkboxes(task_text, f"{list_id}_{idx}", people)
 
 def create_phoebe_checklist(tasks, list_id):
     """Create a simple checklist for Phoebe's tasks"""
@@ -321,19 +285,19 @@ tab1, tab2, tab3 = st.tabs(["📅 Daily Routines", "👧 Phoebe's Schedule", "�
 with tab1:
     # Morning tasks
     st.markdown("### 🌅 Every Morning")
-    create_checkbox_table(morning_tasks, "morning")
+    create_task_list(morning_tasks, "morning")
     
     st.markdown("---")
     
     # Evening tasks
     st.markdown("### 🌙 Every Evening")
-    create_checkbox_table(evening_tasks, "evening")
+    create_task_list(evening_tasks, "evening")
     
     st.markdown("---")
     
     # Weekly tasks
     st.markdown("### 📆 Weekly Tasks")
-    create_checkbox_table(weekly_tasks, "weekly", show_day=True)
+    create_task_list(weekly_tasks, "weekly", show_day=True)
 
 with tab2:
     st.markdown("## Phoebe's Weekly Schedule")
@@ -353,16 +317,15 @@ with tab2:
 
 with tab3:
     st.markdown("### 🔁 Recurring Monthly Tasks")
-    create_checkbox_table(monthly_recurring, "monthly_recurring")
+    create_task_list(monthly_recurring, "monthly_recurring")
     
     st.markdown("---")
     st.markdown("## 📅 Monthly Deep Cleaning Schedule")
     
-    # Display months - they'll wrap naturally on mobile
+    # Display months
     for month, tasks in monthly_tasks.items():
         st.markdown(f"### {month}")
-        create_checkbox_table(tasks, f"month_{month.lower()}")
-        st.markdown("")  # Small spacing between months
+        create_task_list(tasks, f"month_{month.lower()}")
 
 st.markdown('</div>', unsafe_allow_html=True)
 
