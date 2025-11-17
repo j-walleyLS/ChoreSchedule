@@ -74,9 +74,10 @@ st.markdown("""
     
     /* ===== CHECKBOX STYLING ===== */
     
-    /* Make checkbox container visible */
+    /* Force checkbox container to be white */
     [data-baseweb="checkbox"] {
         background-color: white !important;
+        background: white !important;
         border: 2px solid #000 !important;
         border-radius: 4px !important;
         outline: none !important;
@@ -84,9 +85,16 @@ st.markdown("""
         visibility: visible !important;
     }
     
-    /* Checkbox when checked */
+    /* Override any default dark theme */
+    div[data-baseweb="checkbox"] {
+        background-color: white !important;
+        background: white !important;
+    }
+    
+    /* Checkbox when checked - keep white */
     [data-baseweb="checkbox"][data-checked="true"] {
         background-color: white !important;
+        background: white !important;
         border: 2px solid #000 !important;
     }
     
@@ -106,17 +114,30 @@ st.markdown("""
         font-weight: 500;
     }
     
-    /* Remove hover effects */
+    /* Remove ALL hover effects */
     [data-baseweb="checkbox"]:hover {
         background-color: white !important;
+        background: white !important;
         border-color: #000 !important;
     }
     
     /* Remove focus highlight */
     [data-baseweb="checkbox"]:focus {
         background-color: white !important;
+        background: white !important;
         border-color: #000 !important;
         box-shadow: none !important;
+    }
+    
+    /* Force white background for all states */
+    [data-baseweb="checkbox"],
+    [data-baseweb="checkbox"]:hover,
+    [data-baseweb="checkbox"]:focus,
+    [data-baseweb="checkbox"]:active,
+    [data-baseweb="checkbox"][data-checked="true"],
+    [data-baseweb="checkbox"][data-checked="false"] {
+        background-color: white !important;
+        background: white !important;
     }
     
     /* Prevent text selection */
@@ -127,12 +148,25 @@ st.markdown("""
         -ms-user-select: none !important;
     }
     
-    /* Inline checkbox styling */
-    .checkbox-row {
-        display: flex;
-        gap: 1rem;
-        margin-left: 1rem;
-        flex-wrap: wrap;
+    /* Keep checkboxes in a row on mobile */
+    [data-testid="stHorizontalBlock"] {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 0.5rem !important;
+    }
+    
+    /* Prevent column stacking on mobile */
+    [data-testid="column"] {
+        min-width: auto !important;
+        flex: 1 !important;
+        max-width: 100px !important;
+    }
+    
+    /* Force inline display for checkbox containers */
+    .stCheckbox {
+        display: inline-flex !important;
+        align-items: center !important;
+        white-space: nowrap !important;
     }
     
     /* Mobile responsiveness */
@@ -180,8 +214,8 @@ def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
     else:
         st.markdown(f"**{task_text}**")
     
-    # Create a row of checkboxes with labels
-    cols = st.columns(len(people))
+    # Create a row of checkboxes with labels - use more columns to prevent stacking
+    cols = st.columns([1, 1, 1, 3])  # 3 checkbox columns + empty space
     for i, person in enumerate(people):
         with cols[i]:
             key = f"{task_id}_{person}"
@@ -207,7 +241,6 @@ def create_phoebe_checklist(tasks, list_id):
 
 # Title
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
-st.title("🧹 Household Cleaning Schedule")
 
 # Data
 morning_tasks = [
