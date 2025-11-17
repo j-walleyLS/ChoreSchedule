@@ -28,6 +28,11 @@ st.markdown("""
     html, body {
         overflow-x: hidden !important;
         max-width: 100vw !important;
+        position: relative !important;
+    }
+    
+    * {
+        max-width: 100vw !important;
     }
     
     .stApp {
@@ -39,6 +44,49 @@ st.markdown("""
         overflow-x: hidden !important;
         max-width: 100vw !important;
     }
+    
+    /* Force all content to stay within viewport */
+    [data-testid="stAppViewContainer"] {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+    
+    .main .block-container {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+</style>
+
+<script>
+    // JavaScript to prevent horizontal scrolling
+    document.addEventListener('DOMContentLoaded', function() {
+        // Prevent horizontal scroll
+        document.body.style.overflowX = 'hidden';
+        document.documentElement.style.overflowX = 'hidden';
+        
+        // Prevent touchmove horizontally on mobile
+        let startX = 0;
+        document.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+        });
+        
+        document.addEventListener('touchmove', function(e) {
+            let deltaX = e.touches[0].clientX - startX;
+            if (Math.abs(deltaX) > 5) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        // Also prevent scroll event
+        window.addEventListener('scroll', function() {
+            if (window.scrollX !== 0) {
+                window.scrollTo(0, window.scrollY);
+            }
+        });
+    });
+</script>
+
+<style>
     
     /* Remove ALL shadows */
     * {
