@@ -110,29 +110,46 @@ st.markdown("""
     }
     
     /* Force compact Streamlit checkboxes */
-    div[data-testid="column"] {
-        max-width: 40px !important;
-        flex: 0 0 40px !important;
+    /* Target columns that contain checkboxes */
+    div[data-testid="column"]:has(.stCheckbox) {
+        max-width: 60px !important;
+        flex: 0 1 60px !important;
+        display: inline-block !important;
     }
     
-    /* Remove padding from columns */
-    .element-container {
-        width: 100% !important;
-    }
-    
+    /* Force horizontal layout */
     div[data-testid="stHorizontalBlock"] {
-        gap: 5px !important;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+        align-items: center !important;
+        max-width: 200px !important;
     }
     
     /* Make Streamlit checkboxes compact */
     .stCheckbox {
         margin: 0 !important;
         padding: 0 !important;
+        display: inline-flex !important;
+        width: auto !important;
     }
     
     .stCheckbox label {
         padding: 0 2px !important;
-        font-size: 0.85rem !important;
+        font-size: 0.9rem !important;
+        white-space: nowrap !important;
+    }
+    
+    /* Prevent vertical stacking */
+    .element-container {
+        width: auto !important;
+        display: inline-block !important;
+    }
+    
+    .row-widget {
+        display: flex !important;
+        flex-direction: row !important;
     }
     
     /* Mobile responsiveness */
@@ -152,26 +169,26 @@ st.markdown("""
             padding: 6px 10px;
         }
         
-        /* Ultra compact on mobile */
-        div[data-testid="column"]:nth-child(1),
-        div[data-testid="column"]:nth-child(2),
-        div[data-testid="column"]:nth-child(3) {
-            max-width: 35px !important;
-            flex: 0 0 35px !important;
-            padding: 0 !important;
+        /* Keep checkboxes horizontal on mobile */
+        div[data-testid="stHorizontalBlock"] {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            max-width: 180px !important;
         }
         
-        div[data-testid="stHorizontalBlock"] {
-            gap: 2px !important;
-            overflow: visible !important;
+        div[data-testid="column"]:has(.stCheckbox) {
+            max-width: 50px !important;
+            flex: 0 1 50px !important;
         }
         
         .stCheckbox {
-            width: 35px !important;
+            width: auto !important;
+            display: inline-flex !important;
         }
         
         .stCheckbox label {
-            font-size: 0.8rem !important;
+            font-size: 0.85rem !important;
         }
     }
 </style>
@@ -196,12 +213,30 @@ def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
     else:
         st.markdown(f'<div class="task-text">{task_text}</div>', unsafe_allow_html=True)
     
-    # Use Streamlit columns but make them VERY small
-    cols = st.columns([0.5, 0.5, 0.5, 10])  # Very small ratios
+    # Create a container to limit width and keep checkboxes in a row
+    with st.container():
+        # Add custom CSS for this specific container
+        st.markdown("""
+        <style>
+            .checkbox-row-container {
+                max-width: 200px !important;
+                display: flex !important;
+                flex-direction: row !important;
+            }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        # Create checkboxes in equal columns - 3 small ones
+        cols = st.columns([1, 1, 1])
+        
+        with cols[0]:
+            st.checkbox("L", key=f"{task_id}_L")
+        with cols[1]:
+            st.checkbox("J", key=f"{task_id}_J")
+        with cols[2]:
+            st.checkbox("P", key=f"{task_id}_P")
     
-    for i, person in enumerate(people):
-        with cols[i]:
-            st.checkbox(person, key=f"{task_id}_{person}")
+    st.markdown("")  # Add spacing between tasks
 
 def create_task_list(tasks, list_id, people=['L', 'J', 'P'], show_day=False):
     """Create a list of tasks with checkboxes"""
