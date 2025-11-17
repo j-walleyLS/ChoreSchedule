@@ -1,6 +1,5 @@
 import streamlit as st
 from datetime import datetime
-import streamlit.components.v1 as components
 
 # Page configuration
 st.set_page_config(
@@ -10,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for styling with enhanced checkbox targeting
+# Custom CSS for styling
 st.markdown("""
 <style>
     /* Remove white banner/header */
@@ -66,78 +65,51 @@ st.markdown("""
         color: #667eea;
     }
     
-    /* ===== ENHANCED CHECKBOX STYLING ===== */
+    /* ===== CLEAN CHECKBOX STYLING ===== */
     
-    /* Reset checkbox container */
-    .stCheckbox {
-        margin: 0 !important;
-    }
-    
-    /* Label text styling */
-    .stCheckbox label {
+    /* All checkbox text should be dark */
+    .stCheckbox label,
+    .stCheckbox label span,
+    .stCheckbox label p,
+    div[data-testid="stCheckbox"] label,
+    div[data-testid="stCheckbox"] p {
         color: #333 !important;
-        cursor: pointer !important;
+        background-color: transparent !important;
     }
     
-    /* Hide the default checkbox but keep it functional */
-    .stCheckbox input[type="checkbox"] {
-        position: absolute !important;
-        opacity: 0 !important;
-        cursor: pointer !important;
-    }
-    
-    /* Create custom checkbox appearance */
-    .stCheckbox label::before {
-        content: '' !important;
-        display: inline-block !important;
-        width: 18px !important;
-        height: 18px !important;
-        margin-right: 8px !important;
-        vertical-align: middle !important;
+    /* Style the actual checkbox square */
+    [data-baseweb="checkbox"] {
         background-color: white !important;
         border: 2px solid #000 !important;
-        border-radius: 3px !important;
-        box-sizing: border-box !important;
+        border-radius: 4px !important;
+        outline: none !important;
     }
     
-    /* Checked state */
-    .stCheckbox input[type="checkbox"]:checked + label::before {
-        background-color: white !important;
-        border-color: #000 !important;
-    }
-    
-    /* Add checkmark for checked state */
-    .stCheckbox input[type="checkbox"]:checked + label::after {
-        content: '✓' !important;
-        position: absolute !important;
-        left: 4px !important;
-        top: 0px !important;
-        color: #000 !important;
-        font-weight: bold !important;
-        font-size: 14px !important;
-    }
-    
-    /* Alternative approach using attribute selectors */
-    div[data-testid="stCheckbox"] div[data-baseweb="checkbox"] {
+    /* Checkbox when checked - maintain white background */
+    [data-baseweb="checkbox"][data-checked="true"] {
         background-color: white !important;
         border: 2px solid #000 !important;
     }
     
-    div[data-testid="stCheckbox"] div[data-checked="true"] {
-        background-color: white !important;
-        border-color: #000 !important;
-    }
-    
-    /* Target SVG checkmark */
-    div[data-testid="stCheckbox"] svg {
+    /* Make the checkmark/tick black */
+    [data-baseweb="checkbox"] svg {
         color: #000 !important;
         stroke: #000 !important;
+        fill: none !important;
+        stroke-width: 3px !important;
     }
     
-    /* Force override all checkbox-related elements */
-    [data-baseweb="checkbox"] > div {
+    /* Remove any hover effects that might change colors */
+    [data-baseweb="checkbox"]:hover {
         background-color: white !important;
-        border: 2px solid #000 !important;
+        border-color: #000 !important;
+    }
+    
+    /* Focus state */
+    [data-baseweb="checkbox"]:focus {
+        background-color: white !important;
+        border-color: #000 !important;
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1) !important;
     }
     
     /* Mobile responsiveness */
@@ -165,39 +137,6 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
-
-# JavaScript to force checkbox styling
-components.html("""
-<script>
-    const checkInterval = setInterval(() => {
-        const checkboxes = document.querySelectorAll('[data-baseweb="checkbox"]');
-        if (checkboxes.length > 0) {
-            checkboxes.forEach(checkbox => {
-                checkbox.style.backgroundColor = 'white';
-                checkbox.style.border = '2px solid black';
-                checkbox.style.borderRadius = '4px';
-                
-                // Find the SVG inside for the checkmark
-                const svg = checkbox.querySelector('svg');
-                if (svg) {
-                    svg.style.stroke = 'black';
-                    svg.style.fill = 'black';
-                }
-            });
-            
-            // Also target by role
-            const roleCheckboxes = document.querySelectorAll('[role="checkbox"]');
-            roleCheckboxes.forEach(checkbox => {
-                checkbox.style.backgroundColor = 'white';
-                checkbox.style.borderColor = 'black';
-            });
-        }
-    }, 100);
-    
-    // Clear interval after 5 seconds to prevent performance issues
-    setTimeout(() => clearInterval(checkInterval), 5000);
-</script>
-""", height=0)
 
 # Initialize session state for checkboxes if not already done
 if 'checkboxes' not in st.session_state:
