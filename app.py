@@ -28,11 +28,6 @@ st.markdown("""
     html, body {
         overflow-x: hidden !important;
         max-width: 100vw !important;
-        position: relative !important;
-    }
-    
-    * {
-        max-width: 100vw !important;
     }
     
     .stApp {
@@ -41,17 +36,6 @@ st.markdown("""
     }
     
     section.main > div {
-        overflow-x: hidden !important;
-        max-width: 100vw !important;
-    }
-    
-    /* Force all content to stay within viewport */
-    [data-testid="stAppViewContainer"] {
-        overflow-x: hidden !important;
-        max-width: 100vw !important;
-    }
-    
-    .main .block-container {
         overflow-x: hidden !important;
         max-width: 100vw !important;
     }
