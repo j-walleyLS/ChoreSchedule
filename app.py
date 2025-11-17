@@ -144,33 +144,54 @@ st.markdown("""
     [data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-wrap: nowrap !important;
-        gap: 0.25rem !important;
+        gap: 0 !important;
         max-width: 100% !important;
         overflow-x: hidden !important;
     }
     
-    /* Prevent column overflow on mobile */
+    /* Make columns very narrow for checkboxes */
     [data-testid="column"] {
         min-width: 0 !important;
-        flex: 1 1 0 !important;
-        max-width: 33.33% !important;
+        flex-shrink: 1 !important;
+        padding: 0 2px !important;
     }
     
-    /* Force inline display for checkbox containers */
+    /* Ultra compact checkbox styling */
     .stCheckbox {
         display: inline-flex !important;
         align-items: center !important;
         white-space: nowrap !important;
         font-size: 0.9rem !important;
+        min-width: 0 !important;
+        margin-right: 0 !important;
+        padding-right: 0 !important;
     }
     
-    /* Make checkbox labels smaller on mobile */
+    /* Reduce checkbox element spacing */
+    .stCheckbox > label {
+        padding: 0 !important;
+        margin: 0 !important;
+        gap: 4px !important;
+    }
+    
+    /* Make checkbox square smaller on mobile */
     @media (max-width: 768px) {
+        [data-baseweb="checkbox"] {
+            width: 18px !important;
+            height: 18px !important;
+            min-width: 18px !important;
+        }
         .stCheckbox label {
             font-size: 0.85rem !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
         [data-testid="stHorizontalBlock"] {
-            gap: 0.1rem !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        [data-testid="column"] {
+            padding: 0 1px !important;
         }
     }
     
@@ -237,12 +258,16 @@ def create_task_with_checkboxes(task_text, task_id, people=['L', 'J', 'P']):
     else:
         st.markdown(f'<div style="color: white; padding: 8px 0; margin-bottom: 4px;">**{task_text}**</div>', unsafe_allow_html=True)
     
-    # Create checkboxes in columns
-    cols = st.columns([1, 1, 1])
-    for i, person in enumerate(people):
-        with cols[i]:
-            key = f"{task_id}_{person}"
-            st.checkbox(f"{person}", key=key)
+    # Create very compact checkboxes using minimal column space
+    col1, col2, col3, col4 = st.columns([0.5, 0.5, 0.5, 2.5])
+    
+    with col1:
+        st.checkbox("L", key=f"{task_id}_L")
+    with col2:
+        st.checkbox("J", key=f"{task_id}_J")
+    with col3:
+        st.checkbox("P", key=f"{task_id}_P")
+    # col4 is empty space
     
     st.markdown("")  # Add some spacing
 
