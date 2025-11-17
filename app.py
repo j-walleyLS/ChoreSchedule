@@ -65,18 +65,39 @@ st.markdown("""
         color: #667eea;
     }
     
-    /* White checkboxes */
+    /* White checkboxes with black border */
     div[data-testid="stCheckbox"] {
         padding: 5px 0;
     }
     div[data-testid="stCheckbox"] > label {
         color: white;
     }
-    /* Checkbox input styling for white appearance */
+    /* Checkbox input styling for white with black border */
     input[type="checkbox"] {
-        accent-color: white;
-        width: 18px;
-        height: 18px;
+        appearance: none;
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        background-color: white;
+        border: 2px solid black;
+        border-radius: 3px;
+        cursor: pointer;
+        position: relative;
+        margin-right: 8px;
+    }
+    input[type="checkbox"]:checked {
+        background-color: white;
+        border-color: black;
+    }
+    input[type="checkbox"]:checked::after {
+        content: "✓";
+        position: absolute;
+        color: black;
+        font-size: 16px;
+        font-weight: bold;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
     
     /* Mobile responsiveness */
