@@ -67,17 +67,24 @@ st.markdown("""
     
     /* ===== CLEAN CHECKBOX STYLING ===== */
     
-    /* All checkbox text should be dark */
-    .stCheckbox label,
+    /* All checkbox text should be dark - but not have borders */
+    .stCheckbox label {
+        color: #333 !important;
+        background-color: transparent !important;
+        border: none !important;
+    }
+    
     .stCheckbox label span,
     .stCheckbox label p,
     div[data-testid="stCheckbox"] label,
     div[data-testid="stCheckbox"] p {
         color: #333 !important;
         background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
     }
     
-    /* Style the actual checkbox square */
+    /* Style ONLY the actual checkbox square element */
     [data-baseweb="checkbox"] {
         background-color: white !important;
         border: 2px solid #000 !important;
@@ -105,11 +112,65 @@ st.markdown("""
         border-color: #000 !important;
     }
     
-    /* Focus state */
+    /* Focus state - minimal highlight */
     [data-baseweb="checkbox"]:focus {
         background-color: white !important;
         border-color: #000 !important;
-        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: none !important;
+    }
+    
+    /* Prevent text selection/highlighting */
+    .stCheckbox label {
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        -moz-user-select: none !important;
+        -ms-user-select: none !important;
+    }
+    
+    /* Ensure columns maintain their width */
+    .stColumn {
+        flex: initial !important;
+    }
+    
+    /* Maintain column structure */
+    [data-testid="column"] {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+    
+    /* Keep checkboxes inline in table format */
+    [data-testid="column"] .stCheckbox {
+        margin-bottom: 0 !important;
+        padding: 2px 0 !important;
+    }
+    
+    /* Ensure proper spacing between rows */
+    .row-widget {
+        margin-bottom: 0.5rem !important;
+    }
+    
+    /* Fix column widths to prevent stacking */
+    div[data-testid="stHorizontalBlock"] {
+        gap: 1rem !important;
+        flex-wrap: nowrap !important;
+    }
+    
+    /* Force columns to stay side by side */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+        min-width: 0 !important;
+        flex-shrink: 1 !important;
+    }
+    
+    /* Task column should be wider */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:first-child {
+        flex: 4 !important;
+    }
+    
+    /* Checkbox columns should be narrower */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:not(:first-child) {
+        flex: 1 !important;
+        max-width: 80px !important;
     }
     
     /* Mobile responsiveness */
@@ -145,8 +206,8 @@ if 'checkboxes' not in st.session_state:
 def create_checkbox_table(tasks, table_id, people=['L', 'J', 'P'], show_day=False):
     """Create an interactive table with checkboxes for each person"""
     
-    # Header
-    cols = st.columns([3] + [1]*len(people))
+    # Header with better column ratios
+    cols = st.columns([4, 1, 1, 1])  # Wider task column, equal width for people
     cols[0].markdown("**Task**")
     for i, person in enumerate(people):
         cols[i+1].markdown(f"**{person}**")
@@ -155,7 +216,7 @@ def create_checkbox_table(tasks, table_id, people=['L', 'J', 'P'], show_day=Fals
     for idx, task in enumerate(tasks):
         task_text = f"{task['day']}: {task['task']}" if show_day and 'day' in task else task if isinstance(task, str) else task.get('task', '')
         
-        cols = st.columns([3] + [1]*len(people))
+        cols = st.columns([4, 1, 1, 1])  # Same ratio for consistency
         
         # Check if any checkbox is checked for this task
         any_checked = any([
